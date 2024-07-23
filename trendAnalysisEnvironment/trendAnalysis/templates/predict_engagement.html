@@ -1,0 +1,36 @@
+ <!-- {% load static %} -->
+
+<!--<!DOCTYPE html>
+<html>
+<head>
+    <title>Predicted Engagement Scores</title>
+</head>
+<body>
+    <h1>Predicted Engagement Scores by Category</h1>
+    <form method="get">
+        <label for="months_ahead">Months Ahead:</label>
+        <input type="number" id="months_ahead" name="months_ahead" min="1" max="12" value="1">
+        <button type="submit">Predict</button>
+    </form>
+    <h2>Predicted Trending Topics by Engagement Score</h2>
+    <img src="{% static 'static/images/predicted_engagement_score.png' %}" alt="Predicted Trending Topics by Engagement Score">
+</body>
+</html>
+ -->
+
+ <!-- your_template.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicted Engagement Plot</title>
+</head>
+<body>
+    <h1>Predicted Trending Topics by Engagement Score</h1>
+    <img src="{{ plot_path }}" alt="Predicted Engagement Plot">
+    <!-- <img src="../backend/static/images/predicted_engagement_score.png" alt="Predicted Engagement Plot"> -->
+</body>
+</html>
+
