@@ -11,7 +11,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to manage login/logout
 
   useEffect(() => {
-    console.log("jjd");
+    // console.log("jjd");
     // Check if user is logged in when the component mounts
     const checkLoginStatus = async () => {
       try {

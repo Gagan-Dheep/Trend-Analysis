@@ -9,9 +9,9 @@ MODEL_PATH = os.path.join(BASE_DIR, 'models', 'random_forest_model.pkl')
 SELECTOR_PATH = os.path.join(BASE_DIR, 'models', 'feature_selector.pkl')
 DATA_PATH = os.path.join(BASE_DIR, 'models', 'twitter_dataframe.pkl')
 
-print(f"Model Path: {MODEL_PATH}")
-print(f"Selector Path: {SELECTOR_PATH}")
-print(f"Data Path: {DATA_PATH}")
+# print(f"Model Path: {MODEL_PATH}")
+# print(f"Selector Path: {SELECTOR_PATH}")
+# print(f"Data Path: {DATA_PATH}")
 
 def load_model():
     try:

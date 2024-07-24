@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../style';
-import { Footer, Hero, Navbar } from '../components';
+import { Footer, Hero, Navbar, Testimonials } from '../components';
 import Dashboard from '../components/Dashboard';
 
 const Trend = () => {
@@ -16,12 +16,16 @@ const Trend = () => {
         <Dashboard/>
        </div>
         </div>
-      <div className={`bg-primary ${styles.flexStart}`}>
-        <div className={`${styles.boxWidth}`}>
-          {/* <Hero /> */}
-        </div>
+        <div className={`bg-blue-300 ${styles.paddingX} ${styles.flexCenter} mt-20 `}>
+      <div className={`${styles.boxWidth}`}>
+        {/* <Stats /> */}
+        {/* <Testimonials /> */}
+        {/* <Clients /> */}
+        {/* <CTA /> */}
+        <Footer /> 
       </div>
-      <Footer />
+    </div>
+      
     </div>
   );
 };

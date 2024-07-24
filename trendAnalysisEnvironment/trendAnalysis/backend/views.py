@@ -56,26 +56,6 @@ def register_view(request):
             print(f"Error creating user: {e}")
             return JsonResponse({'message': f'Error creating user: {e}'}, status=400)  # status=status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    # else:
-    #     return render(request, 'register.html')
-
-# @csrf_exempt
-# def login_view(request):
-#     print("here")
-#     data = json.loads(request.body)
-#     print(data)
-#     email = data.get('email')
-#     password = data.get('password') 
-#     email_exists = User.objects.filter(email=email).exists()
-    
-#     if email_exists:
-#         request.session['logged_in'] = True 
-#     if not email_exists:
-#         return JsonResponse({'message': 'Email does not exist. create a new user'}, status=400)
-        
-#     return JsonResponse({'message': 'Successfully user is Logged in', 'success':'right'}, status=201)
-
- 
 @csrf_exempt
 def login_view(request):
     data = json.loads(request.body)
@@ -88,9 +68,12 @@ def login_view(request):
         return JsonResponse({'message': 'Email does not exist. Create a new user.'}, status=400)
     
     user = authenticate(username=user.username, password=password)
+    # print(user) 
     if user is not None:
         login(request, user)
         request.session['logged_in'] = True 
+        request.session.save()
+        print(request.session['logged_in'])
         return JsonResponse({'message': 'Successfully logged in', 'success': 'right'}, status=200)
     else:
         return JsonResponse({'message': 'Invalid credentials'}, status=400)
@@ -102,8 +85,12 @@ def logout_view(request):
     return JsonResponse({'isLoggedIn': 'False'})  
 
 @csrf_exempt
+# @api_view(['POST'])
 def predict_engagement(request):
-    global df
+    # print("here it is")
+    data = json.loads(request.body)
+    print(data.get('month'))
+    global df 
 
     if df is None:
         return JsonResponse({"jj":"Error loading data"}, status=500)
@@ -165,7 +152,7 @@ def predict_engagement(request):
             return 'Miscellaneous'
 
     df['Category'] = df['Text'].apply(categorize_tweet)
-    months_ahead = 45
+    months_ahead = int(data.get('month'))
     if months_ahead is None:
         return JsonResponse({"n":"None"})  # or some default value
 
@@ -195,7 +182,9 @@ def predict_engagement(request):
     plt.ylabel('Predicted Engagement Score')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig(os.path.join(PLOT_DIR, 'bar_plot.png'))
+    bar_plot_path = os.path.join(PLOT_DIR, 'bar_plot.png')
+    plt.savefig(bar_plot_path) 
+    # bar_plot_url = os.path.join(settings.STATIC_URL, 'images', 'bar_plot.png').replace('\\', '/')    
     plt.close()
 
     plt.figure(figsize=(10, 6))
@@ -204,7 +193,9 @@ def predict_engagement(request):
     plt.xlabel('Category')
     plt.ylabel('Predicted Engagement Score')
     plt.xticks(rotation=45)
-    plt.savefig(os.path.join(PLOT_DIR, 'line_plot.png'))
+    line_plot_path = os.path.join(PLOT_DIR, 'line_plot.png')
+    # line_plot_url = os.path.join(settings.STATIC_URL, 'images', 'line_plot.png').replace('\\', '/')
+    plt.savefig(line_plot_path)
     plt.close()
 
     plt.figure(figsize=(10, 6))
@@ -213,22 +204,37 @@ def predict_engagement(request):
     plt.xlabel('Category')
     plt.ylabel('Predicted Engagement Score')
     plt.xticks(rotation=45)
-    plt.savefig(os.path.join(PLOT_DIR, 'rel_plot.png'))
+    rel_plot_path = os.path.join(PLOT_DIR, 'rel_plot.png')
+    # rel_plot_url = os.path.join(settings.STATIC_URL, 'images', 'rel_plot.png').replace('\\', '/')
+    plt.savefig(rel_plot_path)
     plt.close()
 
     plt.figure(figsize=(10, 6))
     plt.pie(category_future_engagement['Predicted_Engagement'], labels=category_future_engagement['Category'], autopct='%1.1f%%')
     plt.title('Predicted Trending Topics by Engagement Score')
-    plt.savefig(os.path.join(PLOT_DIR, 'pie_plot.png'))
+    pie_plot_path = os.path.join(PLOT_DIR, 'pie_plot.png')
+    # pie_plot_url = os.path.join(settings.STATIC_URL, 'images', 'pie_plot.png').replace('\\', '/')
+    plt.savefig(pie_plot_path)
     plt.close()
+
+    bar_plot_url = os.path.join(settings.STATIC_URL, 'images', 'bar_plot.png').replace('\\', '/')
+    line_plot_url = os.path.join(settings.STATIC_URL, 'images', 'line_plot.png').replace('\\', '/')
+    rel_plot_url = os.path.join(settings.STATIC_URL, 'images', 'rel_plot.png').replace('\\', '/')
+    pie_plot_url = os.path.join(settings.STATIC_URL, 'images', 'pie_plot.png').replace('\\', '/')
+
+    # bar_plot_url = settings.STATIC_URL + 'images/bar_plot.png'
+    # line_plot_url = settings.STATIC_URL + 'images/line_plot.png'
+    # rel_plot_url = settings.STATIC_URL + 'images/rel_plot.png'
+    # pie_plot_url = settings.STATIC_URL + 'images/pie_plot.png'
 
     # context = {'bar_path': './static/images/bar_plot.png', 'line_path': './static/images/line_plot.png', 'rel_path': './static/images/rel_plot.png', 'pie_path': './static/images/pie_plot.png'}
     return JsonResponse({
-        "bar_plot": bar_plot_path,
-        "line_plot": line_plot_path,
-        "rel_plot": rel_plot_path,
-        "pie_plot": pie_plot_path
+        "bar_plot": bar_plot_url,
+        "line_plot": line_plot_url,   
+        "rel_plot": rel_plot_url,
+        "pie_plot": pie_plot_url
     })
+    
     # return JsonResponse({"success message":"Trend Successfully Detected"})
     # return render(request, 'predict_engagement.html', context)
     # print("yeah")
@@ -279,5 +285,6 @@ def check_session(request):
         response['Access-Control-Allow-Credentials'] = 'true'
         return response
     if request.user.is_authenticated:
+        print("authenticated")
         return JsonResponse({'isLoggedIn': 'True'})
     return JsonResponse({'isLoggedIn': 'False'})  
